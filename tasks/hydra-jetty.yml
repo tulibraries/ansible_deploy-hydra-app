@@ -103,7 +103,7 @@
 
 - name: make sure god is started
   shell: >
-    service {{rails_app_name}}-god start
+    service {{ rails_app_name }}-god start
   become: yes
   tags:
     - rails_app

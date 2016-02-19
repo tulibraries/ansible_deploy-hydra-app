@@ -9,11 +9,11 @@
 # Short-Description:    God
 ### END INIT INFO
 
-NAME={{rails_app_name}}-god
+NAME={{ rails_app_name }}-god
 DESC="Manages the god monitoring process for {{ rails_app_name }}"
-USER={{app_user}}
+USER={{ app_user }}
 GOD_BIN="bundle exec god"
-APP_PATH={{rails_app_install_path}}
+APP_PATH={{ rails_app_install_path }}
 GOD_CONFIG=$APP_PATH/config/god/jetty.god
 GOD_LOG=$APP_PATH/tmp/god.log
 
