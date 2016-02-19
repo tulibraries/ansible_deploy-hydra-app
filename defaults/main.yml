@@ -1,0 +1,17 @@
+---
+# defaults file for ansible_rails-app-deploy
+
+
+rails_app_install_path: /var/www/{{ rails_app_name }}
+rails_app_env: production
+rails_app_deployment_exclude_groups:
+  - test
+  - development
+
+rails_app_git_branch: master
+
+
+fedora_server_host: localhost
+fedora_oai_max_records: 100
+fedora_oai_max_headers: 100
+fedora_oai_repository_name: A fedora repository

@@ -1,0 +1,51 @@
+---
+# handlers file for ansible_rails-app-deploy
+
+- name: restart passenger app
+  shell: >
+    bash -lc 'passenger-config restart-app `pwd`'
+  args:
+    chdir: "{{ rails_app_install_path}}"
+  become_user: "{{ app_user }}"
+  tags:
+    - rails-app
+
+- name: restart jetty
+  shell: >
+    bash -lc 'bundle exec god stop jetty && bundle exec god start jetty'
+  args:
+    chdir: "{{ rails_app_install_path}}"
+  become_user: "{{ app_user }}"
+  tags:
+    - rails-app
+
+- name: deploy tasks
+  shell: >
+    bash -lc 'bundle exec rake {{ item }}'
+  args:
+    chdir: "{{ rails_app_install_path}}"
+  with_items:
+    - assets:precompile
+    - db:migrate
+    - db:seed
+  become_user: "{{ app_user }}"
+  when: >
+    git.changed or 'Installing' in bundled.stdout or vendor_bundle.stat.isdir is undefined or public_assets.stat.isdir is undefined
+  environment:
+    - RAILS_ENV: "{{ rails_app_env}}"
+  tags:
+      - rails_app
+
+- name: restart apache
+  service:
+    name: httpd
+    state: restarted
+  become: yes
+  tags:
+    - rails_app
+
+- name: start god
+  service:
+    name: "{{ rails_app_name }}"
+    state: started
+  become: yes

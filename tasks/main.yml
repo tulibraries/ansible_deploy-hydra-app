@@ -1,0 +1,8 @@
+---
+# tasks file for ansible_rails-app-deploy
+
+
+- include: dependencies.yml
+- include: passenger-config.yml
+- include: install-app.yml
+- include: pre_deploy.yml

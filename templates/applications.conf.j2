@@ -1,0 +1,11 @@
+<VirtualHost *:80>
+    ServerName {{ ansible_fqdn }}
+
+    # Tell Apache and Passenger where your app's 'public' directory is
+    DocumentRoot /var/www/html
+    PassengerRuby /usr/bin/ruby
+
+    #include app specific configs in the applications directory
+    Include conf.d/applications/*.conf-fragment
+
+</VirtualHost>

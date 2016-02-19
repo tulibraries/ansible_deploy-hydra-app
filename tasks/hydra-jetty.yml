@@ -1,0 +1,110 @@
+---
+
+
+- name: Add hydra-jetty specific rail config templates
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ rails_app_install_path }}/config/{{item}}"
+  with_items:
+    - jetty.yml
+    - fedora.yml
+    - solr.yml
+  become_user: "{{ app_user }}"
+  notify:
+      - restart jetty
+      - restart passenger app
+  tags:
+      - rails_app
+
+- name: install Jetty deps
+  yum:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - curl
+    - java-1.8.0-openjdk
+    - unzip
+  become: yes
+  tags:
+    - rails_app
+
+
+- name: Check if the jetty is set up
+  stat:
+   path: "{{ rails_app_install_path}}/jetty"
+  register: jetty
+  changed_when: "jetty.stat.isdir is undefined"
+  tags:
+      - rails_app
+
+- name: set up jetty and config solr
+  shell: >
+    bash -lc 'bundle exec {{ item }}'
+  args:
+    chdir: "{{ rails_app_install_path}}"
+  with_items:
+    - rails g hydra:jetty
+    - rake hydra:jetty:config_solr
+  become_user: "{{ app_user }}"
+  when: "jetty.stat.isdir is undefined"
+  notify:
+      - restart jetty
+  tags:
+      - rails_app
+
+- name: Make sure jetty uses log4j config file
+  lineinfile:
+    dest: "{{ rails_app_install_path}}/jetty/start.ini"
+    line: -Dlog4j.configuration=file:resources/log4j.properties
+  become_user: "{{ app_user }}"
+  notify:
+    - restart jetty
+  tags:
+      - rails_app
+
+- name: Set fedora configuration
+  template:
+    src: fedora.fcfg.j2
+    dest: "{{ rails_app_install_path}}/jetty/fedora/default/server/config/fedora.fcfg"
+  become_user: "{{ app_user }}"
+  notify:
+    - restart jetty
+  tags:
+      - rails_app
+
+- name: create a init.d script for gor process monitoring for jetty
+  template:
+    src: init.d-god-script.j2
+    dest: /etc/init.d/{{ rails_app_name }}-god
+    mode: 0711
+  become: yes
+  tags:
+    - rails_app
+    - init
+
+- name: set god process to start on boot
+  file:
+    path=/etc/{{ item }}
+    state=link
+    src=/etc/init.d/{{ rails_app_name }}-god
+  with_items:
+    - rc.d/rc0.d/K50{{ rails_app_name }}-god
+    - rc.d/rc1.d/K50{{ rails_app_name }}-god
+    - rc.d/rc2.d/S50{{ rails_app_name }}-god
+    - rc.d/rc3.d/S50{{ rails_app_name }}-god
+    - rc.d/rc4.d/S50{{ rails_app_name }}-god
+    - rc.d/rc5.d/S50{{ rails_app_name }}-god
+    - rc.d/rc6.d/K50{{ rails_app_name }}-god
+  become: yes
+  tags:
+    - rails_app
+    - init
+
+
+- name: make sure god is started
+  shell: >
+    service {{rails_app_name}}-god start
+  become: yes
+  tags:
+    - rails_app
+    - init

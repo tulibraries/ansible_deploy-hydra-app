@@ -1,0 +1,89 @@
+---
+
+- name: checkout the rails app code from source control
+  git:
+    repo: "{{ rails_app_git_url}}"
+    dest: "{{ rails_app_install_path}}"
+    version: "{{ rails_app_git_branch }}"
+    recursive: yes
+    accept_hostkey: yes
+  register: git
+  notify:
+      - restart passenger app
+      - deploy tasks
+  tags:
+    - rails_app
+
+- name: make sure all app files are owned by the app user
+  file:
+    path: "{{ rails_app_install_path }}/"
+    state: directory
+    owner: "{{ app_user }}"
+    recurse: yes
+  tags:
+    - rails_app
+
+- name: bundle install the app gems dependencies
+  bundler:
+    state: present
+    chdir: "{{ rails_app_install_path}}"
+    deployment_mode: yes
+    exclude_groups: "{{ rails_app_deployment_exclude_groups }}"
+    executable: "{{ rails_app_bundle_exe }}"
+  become_user: "{{ app_user }}"
+  register: bundled
+  changed_when: "'Installing' in bundled.stdout"
+  notify:
+      - restart passenger app
+      - deploy tasks
+  tags:
+    - rails_app
+
+- name: Add basic rails hydra configuration files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ rails_app_install_path }}/config/{{item}}"
+  with_items:
+    - database.yml
+    - secrets.yml
+  become_user: "{{ app_user }}"
+  notify:
+    - restart passenger app
+    - deploy tasks
+  tags:
+      - rails_app
+
+
+- name: add app specific config files
+  template:
+      src: "{{ item }}.j2"
+      dest: "{{ rails_app_install_path }}/config/{{item}}"
+  with_items: "{{ rails_app_specific_config_files}}"
+  become_user: "{{ app_user }}"
+  notify:
+    - restart passenger app
+    - deploy tasks
+  tags:
+    - rails_app
+
+- include: hydra-jetty.yml
+
+- name: Trigger deploy tasks if vendor/bundle does not eist
+  stat:
+   path: "{{ rails_app_install_path}}/vendor/bundle"
+  register: vendor_bundle
+  changed_when: "vendor_bundle.stat.isdir is undefined"
+  notify:
+    - deploy tasks
+  tags:
+      - rails_app
+
+- name: Trigger deploy tasks if public/assets does not exsit
+  stat:
+    path: "{{ rails_app_install_path}}/public/assets"
+  register: public_assets
+  changed_when: "public_assets.stat.isdir is undefined"
+  notify:
+    - deploy tasks
+  tags:
+      - rails_app

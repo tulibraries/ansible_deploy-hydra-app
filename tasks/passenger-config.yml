@@ -1,0 +1,30 @@
+---
+
+- name: template apache config for all applications on port 80
+  template:
+    src: applications.conf.j2
+    dest: /etc/httpd/conf.d/applications.conf
+  become: yes
+  notify: restart apache
+  tags:
+    - rails_app
+    - passenger
+
+- name: create applications conf directory
+  file:
+    path: /etc/httpd/conf.d/applications
+    state: directory
+  become: yes
+  tags:
+    - rails_app
+    - passenger
+
+- name: template app specific config
+  template:
+    src: conf-fragment.j2
+    dest: /etc/httpd/conf.d/applications/{{ rails_app_name }}.conf-fragment
+  become: yes
+  notify: restart apache
+  tags:
+    - rails_app
+    - passenger
