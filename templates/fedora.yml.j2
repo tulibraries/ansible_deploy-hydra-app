@@ -1,14 +1,14 @@
 development:
   user: {{ fedora_user}}
-  password: {{fedora_password}}
-  url: http://{{jetty_url}}:{{jetty_port}}/fedora
+  password: {{ fedora_password }}
+  url: http://{{ fedora_server_url }}:{{ fedora_server_port }}/fedora
 test: &TEST  
   user: {{ fedora_user}}
-  password: {{fedora_password}}
-  url: http://{{jetty_url}}:{{jetty_port}}/fedora-test" %>
+  password: {{ fedora_password }}
+  url: http://{{ fedora_server_url }}:{{ fedora_server_port }}/fedora-test" %>
 production:
   user: {{ fedora_user}}
-  password: {{fedora_password}}
-  url: http://{{jetty_url}}:{{jetty_port}}/fedora
+  password: {{ fedora_password }}
+  url: http://{{ fedora_server_url }}:{{ fedora_server_port }}/fedora
 cucumber:
   <<: *TEST
