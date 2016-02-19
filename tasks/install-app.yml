@@ -33,6 +33,8 @@
   become_user: "{{ app_user }}"
   register: bundled
   changed_when: "'Installing' in bundled.stdout"
+  environment:
+      - RAILS_ENV: "{{ rails_app_env}}"
   notify:
       - restart passenger app
       - deploy tasks
