@@ -29,8 +29,6 @@
     - db:migrate
     - db:seed
   become_user: "{{ app_user }}"
-  when: >
-    git.changed or 'Installing' in bundled.stdout or vendor_bundle.stat.isdir is undefined or public_assets.stat.isdir is undefined
   environment:
     - RAILS_ENV: "{{ rails_app_env}}"
   tags:
