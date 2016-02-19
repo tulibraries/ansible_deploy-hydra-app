@@ -1,0 +1,8 @@
+---
+
+fedora_server_host: localhost
+fedora_server_port: 8983
+
+fedora_oai_max_records: 100
+fedora_oai_max_headers: 100
+fedora_oai_repository_name: A fedora repository
