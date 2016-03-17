@@ -10,6 +10,17 @@ rails_app_deployment_exclude_groups:
 
 rails_app_git_branch: master
 
+jetty_hostname: locahost
+jetty_port: 8983
 
-- include: fedora.yml
-- include: solr.yml
+fedora_hostname: "{{ jetty_hostname }}"
+fedora_port: "{{ jetty_port }}"
+
+fedora_oai_max_records: 100
+fedora_oai_max_headers: 100
+fedora_oai_repository_name: A fedora repository
+
+
+
+solr_hostname: "{{ jetty_hostname }}"
+solr_port: "{{ solr_port }}"

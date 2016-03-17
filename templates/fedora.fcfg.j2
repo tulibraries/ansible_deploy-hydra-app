@@ -14,7 +14,7 @@
     <comment>Number of seconds Fedora http client will wait for data coming across an 
 		established http connection.</comment>
   </param>
-  <param name="fedoraServerHost" value="{{ fedora_server_host }}">
+  <param name="fedoraServerHost" value="{{ fedora_hostname }}">
     <comment>Defines the host name for the Fedora server, as seen from the 
 		outside world.</comment>
   </param>
@@ -57,7 +57,7 @@
 		this value must be less than the limit specified for the 
 		datastreamExpirationLimit.</comment>
   </param>
-  <param name="fedoraServerPort" value="{{ fedora_server_port }}">
+  <param name="fedoraServerPort" value="{{ fedora_port }}">
     <comment>Defines the port number on which the Fedora server runs; 
 		default is 8080.</comment>
   </param>

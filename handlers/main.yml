@@ -5,32 +5,24 @@
   shell: >
     bash -lc 'passenger-config restart-app `pwd`'
   args:
-    chdir: "{{ rails_app_install_path}}"
+    chdir: "{{ rails_app_install_path }}"
   become_user: "{{ app_user }}"
+  failed_when: False
   tags:
     - rails-app
 
-- name: restart jetty
-  shell: >
-    bash -lc 'bundle exec god stop jetty && bundle exec god start jetty'
-  args:
-    chdir: "{{ rails_app_install_path}}"
-  become_user: "{{ app_user }}"
-  tags:
-    - rails-app
+
 
 - name: deploy tasks
   shell: >
-    bash -lc 'bundle exec rake {{ item }}'
+    bash -lc 'RAILS_ENV={{ rails_app_env }} bundle exec rake {{ item }}'
   args:
-    chdir: "{{ rails_app_install_path}}"
+    chdir: "{{ rails_app_install_path }}"
   with_items:
     - assets:precompile
     - db:migrate
     - db:seed
   become_user: "{{ app_user }}"
-  environment:
-    - RAILS_ENV: "{{ rails_app_env}}"
   tags:
       - rails_app
 
@@ -47,3 +39,12 @@
     name: "{{ rails_app_name }}"
     state: started
   become: yes
+
+- name: restart jetty
+  shell: >
+    bash -lc 'bundle exec god restart jetty'
+  args:
+    chdir: "{{ rails_app_install_path }}"
+  become_user: "{{ app_user }}"
+  tags:
+    - rails-app
