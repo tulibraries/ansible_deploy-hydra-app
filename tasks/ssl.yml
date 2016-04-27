@@ -1,0 +1,43 @@
+---
+
+
+- name: Put the applications ssl config in place if required
+  template:
+      src: ssl-applications.conf.j2
+      dest: /etc/httpd/conf.d/ssl-applications.conf
+    become: yes
+    when: uses_ssl == True
+    notify: restart apache
+    tags:
+      - rails_app
+      - passenger
+
+- name: Put the applications specific template in place
+  template:
+    src: ssl-fragment.j2
+    dest: /etc/httpd/conf.d/applications/{{ rails_app_name }}.ssl-conf-fragment
+  become: yes
+  when: uses_ssl == True
+  notify: restart apache
+  tags:
+    - rails_app
+    - passenger
+
+- name: Copy the SSL cert and key to the remote server
+  file:
+    src: "{{ item }}"
+    dest: {{ ssl_dest_dir }}
+  with_items:
+    - ssl.key
+
+
+
+- name: Decrypt the SSL cert
+  command: >
+    openssl aes-256-cbc -salt -a -d -in {{ ssl_dest_dir }}/nginx.key
+           -out {{ ssl_dest_dir }}/decrypted.key -k {{ ssl_key_password }}
+           creates={{ ssl_dest_dir }}/decrypted.key
+
+- name: Rename the decrypted SSL key
+  command: mv {{ ssl_dest_dir }}/decrypted.key {{ ssl_dest_dir }}/nginx.key
+           removes={{ ssl_dest_dir }}/decrypted.key

@@ -1,0 +1,18 @@
+
+<VirtualHost *:443>
+
+    # Tell Apache and Passenger where your app's 'public' directory is
+    DocumentRoot /var/www/html
+    PassengerRuby /usr/bin/ruby
+    SSLEngine on
+    ServerAdmin {{ admin_email }}
+    ServerName {{ ansible_fqdn }}
+    SSLCertificateFile /etc/ssl/private/{{ ssl_cert_name }}.crt
+    SSLCertificateKeyFile /etc/ssl/private/{{ ssl_cert_key_name }}.key
+    SSLCertificateChainFile /etc/ssl/private/{{ ssl_cert_chain_file }}.crt
+	  SSLProtocol all
+	  SSLCipherSuite HIGH:MEDIUM
+
+    Include conf.d/applications/*.ssl-conf-fragment
+
+</VirtualHost>
