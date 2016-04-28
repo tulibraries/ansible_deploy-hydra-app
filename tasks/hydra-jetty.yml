@@ -102,8 +102,9 @@
 
 
 - name: make sure jetty is started
-  shell: >
-    service {{ rails_app_name }}_jetty start
+  service:
+    name: "{{ rails_app_name }}_jetty"
+    state: started
   become: yes
   tags:
     - rails_app
