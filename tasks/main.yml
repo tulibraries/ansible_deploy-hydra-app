@@ -6,3 +6,4 @@
 - include: passenger-config.yml
 - include: install-app.yml
 - include: pre_deploy.yml
+- include: monitoring.yml

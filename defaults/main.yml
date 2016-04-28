@@ -24,3 +24,5 @@ fedora_oai_repository_name: A fedora repository
 
 solr_hostname: "{{ jetty_hostname }}"
 solr_port: "{{ solr_port }}"
+
+monit_for_jetty: False

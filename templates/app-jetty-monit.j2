@@ -1,0 +1,4 @@
+#Make sure the hydra jetty is running
+check process jetty with pidfile {{ rails_app_install_path }}/tmp/pids/_var_www_{{ rails_app_name }}_jetty_development.pid
+  start program = "/bin/su -l {{ app_user }} && /bin/bash -c 'cd {{ rails_app_install_path }} && bundle exec rake jetty:start'"
+  stop program  = "/bin/su -l {{ app_user }} && /bin/bash -c 'cd {{ rails_app_install_path }} && bundle exec rake jetty:stop'"

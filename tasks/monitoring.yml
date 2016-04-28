@@ -1,0 +1,12 @@
+---
+
+- name: Add monit config for jetty
+  template:
+    src: app-jetty-monit.j2
+    dest: /etc/monit.d/{{ rails_app_name }}_jetty
+  become: yes
+  when: monit_for_jetty == True
+  tags:
+    - rails_app
+    - jetty
+    - monit
