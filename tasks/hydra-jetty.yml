@@ -72,39 +72,21 @@
   tags:
       - rails_app
 
-- name: create a init.d script for jetty
+- name: create a systemd script for jetty
   template:
-    src: app-jetty-initd.j2
-    dest: /etc/init.d/{{ rails_app_name }}_jetty
+    src: app_jetty.service.j2
+    dest: /etc/systemd/system/{{ rails_app_name }}_jetty.service
     mode: 0711
   become: yes
   tags:
     - rails_app
     - init
 
-- name: set jetty process
-  file:
-    path=/etc/{{ item }}
-    state=link
-    src=/etc/init.d/{{ rails_app_name }}_jetty
-  with_items:
-    - rc.d/rc0.d/K50{{ rails_app_name }}-jetty
-    - rc.d/rc1.d/K50{{ rails_app_name }}-jetty
-    - rc.d/rc2.d/S50{{ rails_app_name }}-jetty
-    - rc.d/rc3.d/S50{{ rails_app_name }}-jetty
-    - rc.d/rc4.d/S50{{ rails_app_name }}-jetty
-    - rc.d/rc5.d/S50{{ rails_app_name }}-jetty
-    - rc.d/rc6.d/K50{{ rails_app_name }}-jetty
-  become: yes
-  tags:
-    - rails_app
-    - init
-
-
-- name: make sure jetty is started
+- name: make sure jetty is started and enabled
   service:
-    name: "{{ rails_app_name }}_jetty"
+    name: "{{ rails_app_name }}_jetty.service"
     state: started
+    enabled: yes
   become: yes
   tags:
     - rails_app

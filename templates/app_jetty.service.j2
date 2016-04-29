@@ -1,0 +1,34 @@
+ # This file is systemd template for hydra jetty service. To
+ # register a hydra jetty with systemd, place the APPNAME_jetty.service file
+ # to the /lib/systemd/system/ directory and then start it
+ # using systemctl (see bellow).
+ #
+ # Enable tul_ohist_jetty to start on boot:
+ #         systemctl enable {{rails_app_name}}_jetty.service
+ #
+ # Start monit immediately: 
+ #         systemctl start {{rails_app_name}}_jetty.service
+ #
+ # Stop monit:
+ #         systemctl stop {{rails_app_name}}_jetty.service
+ #
+ # Status:
+ #         systemctl status {{rails_app_name}}_jetty.service
+
+[Unit]
+Description=Jetty containing Fedora and Solr for Oral Histories Hydra Application
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User={{ app_user }}
+WorkingDirectory={{ rails_app_install_path }}
+ExecStart=/usr/bin/bash -lc "bundle exec rake jetty:start"
+ExecStop=/usr/bin/bash -lc "bundle exec rake jetty:stop"
+ExecReload=/usr/bin/bash -lc "bundle exec rake jetty:restart"
+
+
+[Install]
+WantedBy=multi-user.target
+
