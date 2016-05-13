@@ -34,17 +34,9 @@
   tags:
     - rails_app
 
-- name: start god
-  service:
-    name: "{{ rails_app_name }}"
-    state: started
-  become: yes
-
 - name: restart jetty
-  shell: >
-    bash -lc 'bundle exec god restart jetty'
-  args:
-    chdir: "{{ rails_app_install_path }}"
-  become_user: "{{ app_user }}"
+  service:
+    name: "{{ rails_app_name}}_jetty"
+    state: restarted
   tags:
     - rails-app
