@@ -1,6 +1,6 @@
 ---
 
-- name: template apache config for all applications on port 80
+- name: template apache config for all.yml applications on port 80
   template:
     src: applications.conf.j2
     dest: /etc/httpd/conf.d/applications.conf
@@ -9,6 +9,9 @@
   tags:
     - rails_app
     - passenger
+
+- include: ssl.yml
+  when: app_use_ssl
 
 - name: create applications conf directory
   file:

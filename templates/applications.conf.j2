@@ -5,6 +5,10 @@
     DocumentRoot /var/www/html
     PassengerRuby /usr/bin/ruby
 
+    {% if app_set_root_redirect %}}
+    RedirectMatch ^/$ {{ app_root_redirect }}
+    {% endif %}
+
     #include app specific configs in the applications directory
     Include conf.d/applications/*.conf-fragment
 

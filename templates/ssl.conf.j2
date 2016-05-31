@@ -1,0 +1,51 @@
+Listen 443
+SSLSessionCache         shmcb:/var/cache/mod_ssl/scache(512000)
+SSLSessionCacheTimeout  300
+
+SSLRandomSeed startup file:/dev/urandom  256
+SSLRandomSeed connect builtin
+SSLCryptoDevice builtin
+
+<VirtualHost *:443>
+
+
+  ServerName {{ansible_fqdn}}
+
+  ErrorLog logs/ssl_error_log
+  TransferLog logs/ssl_access_log
+  LogLevel warn
+
+  SSLEngine on
+  SSLProtocol All -SSLv2 -SSLv3
+  SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
+
+  SSLCertificateFile {{ app_ssl_cert_path }}
+  SSLCertificateKeyFile {{ app_ssl_key_path }}
+  {% if app_use_intermediate_cert %}SSLCACertificateFile {{ app_ssl_intermediate_path }}{% endif %}
+
+
+SetEnvIf User-Agent ".*MSIE.*" \
+         nokeepalive ssl-unclean-shutdown \
+         downgrade-1.0 force-response-1.0
+
+
+CustomLog logs/ssl_request_log \
+          "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
+  
+  DocumentRoot /var/www/html
+  PassengerRuby /usr/bin/ruby
+
+  {% if app_set_root_redirect %}}
+  RedirectMatch ^/$ {{ app_root_redirect }}
+  {% endif %}
+
+  #include app specific configs in the applications directory
+  Include conf.d/applications/*.conf-fragment
+
+
+  <Directory /var/www/html>
+    AllowOverride all
+  </Directory>
+
+</VirtualHost>
