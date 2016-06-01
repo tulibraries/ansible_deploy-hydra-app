@@ -36,7 +36,7 @@
 
 - name: restart jetty
   service:
-    name: "{{ rails_app_name}}_jetty"
+    name: "{{ rails_app_name}}_jetty.service"
     state: restarted
   tags:
     - rails-app

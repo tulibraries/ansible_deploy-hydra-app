@@ -1,0 +1,52 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:             {{rails_app_name}}_jetty.service
+# Required-Start:       $all
+# Required-Stop:        $all
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    Jetty for Hydra App
+### END INIT INFO
+
+NAME={{ rails_app_name }}_jetty.service
+DESC="the jetty process for {{rails_app_name}}"
+USER={{ app_user }}
+APP_PATH={{ rails_app_install_path }}
+RAKE="bundle exec rake"
+
+set -e
+
+RETVAL=0
+
+case "$1" in
+  start)
+    echo -n "Starting $DESC: "
+    su $USER -lc "cd $APP_PATH && $RAKE jetty:start"
+    RETVAL=$?
+    echo "$NAME."
+    ;;
+  stop)
+    echo -n "Stopping $DESC: "
+    su $USER -lc "cd $APP_PATH && $RAKE jetty:stop"
+    RETVAL=$?
+    echo "$NAME."
+    ;;
+  restart)
+    echo -n "Restarting $DESC: "
+    su $USER -lc "cd $APP_PATH && $RAKE jetty:stop"
+    su $USER -lc "cd $APP_PATH && $RAKE jetty:start"
+    RETVAL=$?
+    echo "$NAME."
+    ;;
+  status)
+    su $USER -lc "cd $APP_PATH && $RAKE jetty:status"
+    RETVAL=$?
+    ;;
+  *)
+    echo "Usage: $NAME {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit $RETVAL

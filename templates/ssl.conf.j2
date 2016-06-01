@@ -1,10 +1,20 @@
 Listen 443
+
+{% if  ansible_os_family == "RedHat" and ansible_distribution_major_version == "7" %}
 SSLSessionCache         shmcb:/var/cache/mod_ssl/scache(512000)
 SSLSessionCacheTimeout  300
+{% endif %}
 
+
+{% if  ansible_os_family == "RedHat" and ansible_distribution_major_version == "7" %}
 SSLRandomSeed startup file:/dev/urandom  256
 SSLRandomSeed connect builtin
 SSLCryptoDevice builtin
+{% endif %}
+
+{% if  ansible_os_family == "RedHat" and ansible_distribution_major_version == "6" %}
+LoadModule ssl_module modules/mod_ssl.so
+{% endif %}
 
 <VirtualHost *:443>
 
@@ -43,9 +53,5 @@ CustomLog logs/ssl_request_log \
   #include app specific configs in the applications directory
   Include conf.d/applications/*.conf-fragment
 
-
-  <Directory /var/www/html>
-    AllowOverride all
-  </Directory>
 
 </VirtualHost>
