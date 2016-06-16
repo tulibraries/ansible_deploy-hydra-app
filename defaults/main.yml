@@ -35,3 +35,6 @@ app_ssl_intermediate_path: "{{ app_certs_base_path }}/certs/intermediate.crt"
 app_use_intermediate_cert: true
 
 app_set_root_redirect: false
+
+#default to no app specific dependencies to install
+app_package_dependencies: []

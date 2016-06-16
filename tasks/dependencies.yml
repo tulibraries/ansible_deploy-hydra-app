@@ -24,10 +24,17 @@
     - curl
     - sqlite-devel
     - epel-release
-  sudo: yes
+  become: yes
 
 - name: install nodejs for asset pipeline for rails
   yum:
     name: nodejs
     state: present
-  sudo: yes
+  become: yes
+
+- name: Install app specifc dependencies
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ app_package_dependencies }}"
+  become: yes
