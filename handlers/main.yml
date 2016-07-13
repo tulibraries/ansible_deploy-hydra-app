@@ -11,8 +11,6 @@
   tags:
     - rails-app
 
-
-
 - name: deploy tasks
   shell: >
     bash -lc 'RAILS_ENV={{ rails_app_env }} bundle exec rake {{ item }}'
@@ -25,6 +23,18 @@
   become_user: "{{ app_user }}"
   tags:
       - rails_app
+
+- name: restart resque workers
+  service: 
+    name: resque-pool
+    state: restarted
+  when: use_resque
+  become: yes
+
+- name: reload resque pool service
+  shell:
+    systemctl daemon-reload
+  become: yes
 
 - name: restart apache
   service:

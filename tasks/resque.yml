@@ -1,0 +1,32 @@
+---
+
+- name: Add resque-worker configuration files
+  template:
+    src: resque-pool.yml.j2
+    dest: "{{ rails_app_install_path }}/config/resque-pool.yml"
+  become_user: "{{ app_user }}"
+  notify:
+    - restart passenger app
+    - restart resque workers
+  tags:
+    - rails_app
+    - resque
+
+- name: Add resque init.d script
+  template:
+    src: resque.j2
+    dest: /etc/init.d/resque-pool
+    mode: 0755
+  register: resque_initd
+  notify:
+    - restart passenger app
+    - restart resque workers
+    - reload resque pool service
+  tags:
+    - rails_app
+    - resque
+
+- name: add resque-pool to chkconfig
+  shell:
+    chkconfig --add resque-pool
+  when: resque_initd.changed

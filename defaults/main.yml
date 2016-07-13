@@ -38,3 +38,6 @@ app_set_root_redirect: false
 
 #default to no app specific dependencies to install
 app_package_dependencies: []
+
+use_hydra_jetty: True
+use_resque: False
