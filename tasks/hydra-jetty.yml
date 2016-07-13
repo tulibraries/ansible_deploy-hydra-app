@@ -6,9 +6,9 @@
     src: "{{ item }}.j2"
     dest: "{{ rails_app_install_path }}/config/{{item}}"
   with_items:
-    - jetty.yml
-    - fedora.yml
-    - solr.yml
+    - jetty/jetty.yml
+    - jetty/fedora.yml
+    - jetty/solr.yml
   become_user: "{{ app_user }}"
   notify:
       - restart jetty
