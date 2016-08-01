@@ -11,6 +11,7 @@
   notify:
       - restart passenger app
       - deploy tasks
+      - restart resque workers
   tags:
     - rails_app
 
@@ -38,6 +39,7 @@
   notify:
       - restart passenger app
       - deploy tasks
+      - restart resque workers
   tags:
     - rails_app
 
@@ -52,6 +54,7 @@
   notify:
     - restart passenger app
     - deploy tasks
+    - restart resque workers
   tags:
       - rails_app
 
@@ -65,6 +68,7 @@
   notify:
     - restart passenger app
     - deploy tasks
+    - restart resque workers
   tags:
     - rails_app
 
@@ -89,3 +93,8 @@
       - rails_app
 
 - include: hydra-jetty.yml
+  when: use_hydra_jetty 
+
+- include: resque.yml
+  when: use_resque
+
