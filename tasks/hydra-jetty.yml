@@ -3,12 +3,12 @@
 
 - name: Add hydra-jetty specific rail config templates
   template:
-    src: "{{ item }}.j2"
+    src: jetty/{{ item }}.j2
     dest: "{{ rails_app_install_path }}/config/{{item}}"
   with_items:
-    - jetty/jetty.yml
-    - jetty/fedora.yml
-    - jetty/solr.yml
+    - jetty.yml
+    - fedora.yml
+    - solr.yml
   become_user: "{{ app_user }}"
   notify:
       - restart jetty
