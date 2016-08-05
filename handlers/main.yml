@@ -1,6 +1,21 @@
 ---
 # handlers file for ansible_rails-app-deploy
 
+- name: deploy tasks
+  shell: >
+    bash -lc 'RAILS_ENV={{ rails_app_env }} bundle exec rake {{ item }}'
+  args:
+    chdir: "{{ rails_app_install_path }}"
+  with_items:
+    - assets:clobber
+    - assets:precompile
+    - db:migrate
+    - db:seed
+  become_user: "{{ app_user }}"
+  notify: restart passenger app
+  tags:
+      - rails_app
+
 - name: restart passenger app
   shell: >
     bash -lc 'passenger-config restart-app `pwd`'
@@ -10,19 +25,6 @@
   failed_when: False
   tags:
     - rails-app
-
-- name: deploy tasks
-  shell: >
-    bash -lc 'RAILS_ENV={{ rails_app_env }} bundle exec rake {{ item }}'
-  args:
-    chdir: "{{ rails_app_install_path }}"
-  with_items:
-    - assets:precompile
-    - db:migrate
-    - db:seed
-  become_user: "{{ app_user }}"
-  tags:
-      - rails_app
 
 - name: restart resque workers
   service: 
