@@ -3,7 +3,7 @@ TraceEnable off
 <VirtualHost *:80>
     {% if fqdn %} 
     ServerName {{ ansible_fqdn }}
-    {% end if %}
+    {% endif %}
 
     # Tell Apache and Passenger where your app's 'public' directory is
     DocumentRoot /var/www/html
