@@ -46,7 +46,7 @@ CustomLog logs/ssl_request_log \
   DocumentRoot /var/www/html
   PassengerRuby /usr/bin/ruby
 
-  {% if app_set_root_redirect %}}
+  {% if app_set_root_redirect %}
   RedirectMatch ^/$ {{ app_root_redirect }}
   {% endif %}
 
