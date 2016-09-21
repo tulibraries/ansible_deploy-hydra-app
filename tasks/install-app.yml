@@ -1,5 +1,11 @@
 ---
 
+- name: make sure the app dir exists and is owner by app user
+  file:
+    path: "{{ rails_app_install_path }}/"
+    state: directory
+    owner: "{{ app_user }}"
+
 - name: checkout the rails app code from source control
   git:
     repo: "{{ rails_app_git_url}}"
@@ -8,19 +14,11 @@
     recursive: yes
     accept_hostkey: yes
   register: git
+  become_user: "{{ app_user }}"
   notify:
       - restart passenger app
       - deploy tasks
       - restart resque workers
-  tags:
-    - rails_app
-
-- name: make sure all app files are owned by the app user
-  file:
-    path: "{{ rails_app_install_path }}/"
-    state: directory
-    owner: "{{ app_user }}"
-    recurse: yes
   tags:
     - rails_app
 
