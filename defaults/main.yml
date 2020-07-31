@@ -8,7 +8,7 @@ rails_app_deployment_exclude_groups:
   - test
   - development
 
-rails_app_git_branch: master
+rails_app_git_branch: main
 
 jetty_hostname: locahost
 jetty_port: 8983
